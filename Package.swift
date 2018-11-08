@@ -23,12 +23,15 @@ let package = Package(
             url: "https://github.com/tris-foundation/stream.git",
             .branch("master")),
         .package(
+            url: "https://github.com/tris-foundation/hex.git",
+            .branch("master")),
+        .package(
             url: "https://github.com/tris-foundation/test.git",
             .branch("master"))
     ],
     targets: [
-        .target(name: "SHA1"),
-        .target(name: "UUID", dependencies: ["SHA1"]),
+        .target(name: "SHA1", dependencies: ["Hex"]),
+        .target(name: "UUID", dependencies: ["Hex", "SHA1"]),
         .target(name: "Crypto", dependencies: ["Stream"]),
         .testTarget(name: "SHA1Tests", dependencies: ["Test", "SHA1"]),
         .testTarget(name: "ASN1Tests", dependencies: ["Test", "Crypto"]),
