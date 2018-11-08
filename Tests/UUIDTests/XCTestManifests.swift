@@ -4,7 +4,9 @@ extension UUIDTests {
     static let __allTests = [
         ("testDecodeUUIDString", testDecodeUUIDString),
         ("testEncodeUUIDString", testEncodeUUIDString),
+        ("testNamespace", testNamespace),
         ("testUUID", testUUID),
+        ("testUUIDv5", testUUIDv5),
     ]
 }
 

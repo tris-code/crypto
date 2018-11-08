@@ -35,4 +35,16 @@ final class UUIDTests: TestCase {
         let uuidString = uuid.uuidString
         assertEqual(UUID(uuidString: uuidString), uuid)
     }
+
+    func testNamespace() {
+        assertEqual(UUID.dns.uuidString, "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+        assertEqual(UUID.url.uuidString, "6ba7b811-9dad-11d1-80b4-00c04fd430c8")
+        assertEqual(UUID.oid.uuidString, "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
+        assertEqual(UUID.x500.uuidString,"6ba7b814-9dad-11d1-80b4-00c04fd430c8")
+    }
+
+    func testUUIDv5() {
+        let uuid = UUID(namespace: .dns, name: "tris.foundaton")
+        assertEqual(uuid.uuidString, "2fe823aa-a1fb-52b0-8ba8-4fd99abd8850")
+    }
 }

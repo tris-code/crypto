@@ -9,12 +9,20 @@
  *                                                                            *
  ******************************************************************************/
 
+import SHA1
+
 extension UUID {
-    /// UUID version 4 (random)
-    public init() {
-        self.time = Time(.random(in: .min ... .max))
-        self.clock = Clock(.random(in: .min ... .max))
-        self.node = Node(.random(in: .min ... .max))
-        self.version = .v4
+    /// UUID version 5 - sha1(namespace + name)
+    public init(namespace: UUID, name: String) {
+        let bytes = namespace.bytes + [UInt8](name.utf8)
+
+        var sha1 = SHA1()
+        sha1.update(bytes)
+        let hash = sha1.final()
+
+        var uuid = unsafeBitCast(hash.bigEndian, to: (UUID, UInt32).self).0
+        uuid.version = .v5
+        uuid.clock.clearReserved()
+        self = uuid
     }
 }
