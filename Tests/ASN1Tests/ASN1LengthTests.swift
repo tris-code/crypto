@@ -11,7 +11,7 @@
 
 import Test
 import Stream
-@testable import Crypto
+@testable import ASN1
 
 class ASN1LengthTests: TestCase {
     func testReadLength1Octet() {
