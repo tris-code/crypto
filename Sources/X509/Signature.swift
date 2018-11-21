@@ -10,39 +10,42 @@
  ******************************************************************************/
 
 import ASN1
-import Time
 import Stream
 
-// https://tools.ietf.org/html/rfc5280
+public struct Signature: Equatable {
+    public let padding: Int
+    public let encrypted: [UInt8]
 
-public struct X509: Equatable {
-    public let certificate: Certificate
-    public let algorithm: Algorithm
-    public let signature: Signature
-
-    public init(
-        certificate: Certificate,
-        algorithm: Algorithm,
-        signature: Signature)
-    {
-        self.certificate = certificate
-        self.algorithm = algorithm
-        self.signature = signature
+    public init(padding: Int, encrypted: [UInt8]) {
+        self.padding = padding
+        self.encrypted = encrypted
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
+// https://tools.ietf.org/html/rfc5280#section-4.1.1.3
 
-extension X509 {
+extension Signature {
     public init(from asn1: ASN1) throws {
-        guard asn1.isConstructed,
-            let sequence = asn1.sequenceValue,
-            sequence.count == 3
-        else {
-            throw Error.invalidX509
+        guard let bitString = BitString(from: asn1) else {
+            throw X509.Error.invalidSignature
         }
-        self.certificate = try Certificate(from: sequence[0])
-        self.algorithm = try Algorithm(from: sequence[1])
-        self.signature = try Signature(from: sequence[2])
+        self.padding = bitString.padding
+        self.encrypted = bitString.bytes
+    }
+}
+
+struct BitString {
+    let padding: Int
+    let bytes: [UInt8]
+
+    init?(from asn1: ASN1) {
+        guard asn1.tag == .bitString,
+            let data = asn1.dataValue,
+            data.count >= 2 else
+        {
+            return nil
+        }
+        self.padding = Int(data[0])
+        self.bytes = [UInt8](data[1...])
     }
 }

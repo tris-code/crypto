@@ -10,39 +10,24 @@
  ******************************************************************************/
 
 import ASN1
-import Time
 import Stream
 
-// https://tools.ietf.org/html/rfc5280
-
-public struct X509: Equatable {
-    public let certificate: Certificate
-    public let algorithm: Algorithm
-    public let signature: Signature
-
-    public init(
-        certificate: Certificate,
-        algorithm: Algorithm,
-        signature: Signature)
-    {
-        self.certificate = certificate
-        self.algorithm = algorithm
-        self.signature = signature
+extension Certificate {
+    public enum Version: UInt8, Equatable {
+        case v3 = 0x02
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
-
-extension X509 {
+extension Certificate.Version {
     public init(from asn1: ASN1) throws {
-        guard asn1.isConstructed,
-            let sequence = asn1.sequenceValue,
-            sequence.count == 3
-        else {
-            throw Error.invalidX509
+        guard let sequence = asn1.sequenceValue,
+            sequence.count == 1,
+            let value = sequence[0].integerValue,
+            let rawVersion = UInt8(exactly: value),
+            let version = Certificate.Version(rawValue: rawVersion) else
+        {
+            throw X509.Error.invalidVersion
         }
-        self.certificate = try Certificate(from: sequence[0])
-        self.algorithm = try Algorithm(from: sequence[1])
-        self.signature = try Signature(from: sequence[2])
+        self = version
     }
 }
