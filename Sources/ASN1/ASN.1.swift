@@ -31,6 +31,7 @@ public struct ASN1: Equatable {
         case string(String)
         case data([UInt8])
         case sequence([ASN1])
+        case objectIdentifier(ObjectIdentifier)
     }
 
     public struct Identifier: Equatable {
@@ -134,6 +135,15 @@ extension ASN1 {
         switch self.content {
         case .sequence(let value): return value
         default: return nil
+        }
+    }
+
+    public var objectIdentifierValue: ASN1.ObjectIdentifier? {
+        switch self.content {
+        case .objectIdentifier(let value) where tag == .objectIdentifier:
+            return value
+        default:
+            return nil
         }
     }
 }
