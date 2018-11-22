@@ -10,21 +10,20 @@
  ******************************************************************************/
 
 import ASN1
-import Stream
 
-extension Certificate {
-    public struct SerialNumber: Equatable {
-        public let bytes: [UInt8]
-    }
+public enum Name: Equatable {
+    case rdnSequence(RDNSequence)
 }
 
-extension Certificate.SerialNumber {
+// https://tools.ietf.org/html/rfc5280#section-4.1.2.4
+
+extension Name {
+    // Name ::= CHOICE { -- only one possibility for now --
+    //   rdnSequence  RDNSequence }
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.insaneIntegerValue,
-            bytes.count > 0 else
-        {
-            throw X509.Error(.invalidSerialNumber, asn1)
+        guard asn1.tag == .sequence else {
+            throw X509.Error(.invalidDistinguishedName, asn1)
         }
-        self.bytes = bytes
+        self = .rdnSequence(try RDNSequence(from: asn1))
     }
 }

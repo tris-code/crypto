@@ -12,19 +12,33 @@
 import ASN1
 import Stream
 
-extension Certificate {
-    public struct SerialNumber: Equatable {
-        public let bytes: [UInt8]
-    }
+public struct EDIPartyName: Equatable {
+    let nameAssigner: DirectoryString?
+    let partyName: DirectoryString
 }
 
-extension Certificate.SerialNumber {
+// https://tools.ietf.org/html/rfc5280#section-4.2.1.6
+
+extension EDIPartyName {
+    // EDIPartyName ::= SEQUENCE {
+    //   nameAssigner            [0]     DirectoryString OPTIONAL,
+    //   partyName               [1]     DirectoryString }
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.insaneIntegerValue,
-            bytes.count > 0 else
+        guard let sequence = asn1.sequenceValue,
+            (sequence.count == 1 || sequence.count == 2) else
         {
-            throw X509.Error(.invalidSerialNumber, asn1)
+            throw X509.Error(.invalidEDIPartyName, asn1)
         }
-        self.bytes = bytes
+
+        switch sequence.count {
+        case 1:
+            self.nameAssigner = nil
+            self.partyName = try .init(from: sequence[0])
+        case 2:
+            self.nameAssigner = try .init(from: sequence[0])
+            self.partyName = try .init(from: sequence[1])
+        default:
+            fatalError("unreachable")
+        }
     }
 }

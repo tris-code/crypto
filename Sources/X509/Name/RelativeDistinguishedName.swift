@@ -10,21 +10,24 @@
  ******************************************************************************/
 
 import ASN1
-import Stream
 
-extension Certificate {
-    public struct SerialNumber: Equatable {
-        public let bytes: [UInt8]
-    }
-}
+public typealias RelativeDistinguishedName = Set<AttributeTypeAndValue>
 
-extension Certificate.SerialNumber {
+// https://tools.ietf.org/html/rfc5280#section-4.1.2.4
+
+extension Set where Element == AttributeTypeAndValue {
+    // RelativeDistinguishedName ::=
+    //   SET SIZE (1..MAX) OF AttributeTypeAndValue
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.insaneIntegerValue,
-            bytes.count > 0 else
+        guard let items = asn1.setValue,
+            items.count >= 1 else
         {
-            throw X509.Error(.invalidSerialNumber, asn1)
+            throw X509.Error(.invalidRelativeDistinguishedName, asn1)
         }
-        self.bytes = bytes
+        var name = RelativeDistinguishedName()
+        for item in items {
+            try name.insert(.init(from: item))
+        }
+        self = name
     }
 }
