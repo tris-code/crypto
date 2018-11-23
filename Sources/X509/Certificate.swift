@@ -20,7 +20,7 @@ public struct Certificate: Equatable {
     public let validity: Validity
     public let subject: Name
     public let publicKey: PublicKey
-    public let extensions: Extensions
+    public let extensions: [Extension]
 
     public init(
         version: Version,
@@ -30,7 +30,7 @@ public struct Certificate: Equatable {
         validity: Validity,
         subject: Name,
         publicKey: PublicKey,
-        extensions: Extensions)
+        extensions: [Extension])
     {
         self.version = version
         self.serialNumber = serialNumber
@@ -60,6 +60,6 @@ extension Certificate {
         self.validity = try Validity(from: sequence[4])
         self.subject = try Name(from: sequence[5])
         self.publicKey = try PublicKey(from: sequence[6])
-        self.extensions = try Extensions(from: sequence[7])
+        self.extensions = try [Extension](from: sequence[7])
     }
 }
