@@ -20,6 +20,7 @@ extension Certificate {
 
         enum Variant: Equatable {
         case subjectKeyIdentifier(SubjectKeyIdentifier)
+        case keyUsage(KeyUsage)
         case basicConstrains(BasicConstrains)
         case crlDistributionPoints(CRLDistributionPoints)
         case authorityKeyIdentifier(AuthorityKeyIdentifier)
@@ -79,6 +80,8 @@ extension Certificate.Extension {
         switch variant {
         case .subjectKeyIdentifier:
             self.value = .subjectKeyIdentifier(try .init(from: `extension`))
+        case .keyUsage:
+            self.value = .keyUsage(try .init(from: `extension`))
         case .basicConstrains:
             self.value = .basicConstrains(try .init(from: `extension`))
         case .crlDistributionPoints:
