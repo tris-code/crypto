@@ -10,39 +10,31 @@
  ******************************************************************************/
 
 import ASN1
-import Time
 import Stream
 
-// https://tools.ietf.org/html/rfc5280
+extension TBSCertificate {
+    public struct Validity: Equatable {
+        public let notBefore: Time
+        public let notAfter: Time
 
-public struct X509: Equatable {
-    public let certificate: Certificate
-    public let algorithm: Algorithm
-    public let signature: Signature
-
-    public init(
-        certificate: Certificate,
-        algorithm: Algorithm,
-        signature: Signature)
-    {
-        self.certificate = certificate
-        self.algorithm = algorithm
-        self.signature = signature
+        public init(notBefore: Time, notAfter: Time) {
+            self.notBefore = notBefore
+            self.notAfter = notAfter
+        }
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
-
-extension X509 {
+extension TBSCertificate.Validity {
+    // Validity ::= SEQUENCE {
+    //   notBefore      Time,
+    //   notAfter       Time }
     public init(from asn1: ASN1) throws {
-        guard asn1.isConstructed,
-            let sequence = asn1.sequenceValue,
-            sequence.count == 3
-        else {
-            throw Error(.invalidX509, asn1)
+        guard let sequence = asn1.sequenceValue,
+            sequence.count == 2 else
+        {
+            throw X509.Error(.invalidValidity, asn1)
         }
-        self.certificate = try Certificate(from: sequence[0])
-        self.algorithm = try Algorithm(from: sequence[1])
-        self.signature = try Signature(from: sequence[2])
+        self.notBefore = try TBSCertificate.Time(from: sequence[0])
+        self.notAfter = try TBSCertificate.Time(from: sequence[1])
     }
 }

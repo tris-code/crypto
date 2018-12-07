@@ -12,19 +12,22 @@
 import ASN1
 import Stream
 
-extension Certificate {
-    public struct SerialNumber: Equatable {
-        public let bytes: [UInt8]
+extension TBSCertificate {
+    public enum Version: UInt8, Equatable {
+        case v3 = 0x02
     }
 }
 
-extension Certificate.SerialNumber {
+extension TBSCertificate.Version {
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.insaneIntegerValue,
-            bytes.count > 0 else
+        guard let sequence = asn1.sequenceValue,
+            sequence.count == 1,
+            let value = sequence[0].integerValue,
+            let rawVersion = UInt8(exactly: value),
+            let version = TBSCertificate.Version(rawValue: rawVersion) else
         {
-            throw X509.Error(.invalidSerialNumber, asn1)
+            throw X509.Error(.invalidVersion, asn1)
         }
-        self.bytes = bytes
+        self = version
     }
 }

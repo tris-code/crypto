@@ -11,42 +11,20 @@
 
 import ASN1
 import Stream
-import Time
 
-public typealias TrisTime = Time
-
-extension Certificate {
-    public enum Time: Equatable {
-        case utc(TrisTime)
-        case generalized(TrisTime)
+extension TBSCertificate {
+    public struct SerialNumber: Equatable {
+        public let bytes: [UInt8]
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
-
-extension Certificate.Time {
-    // Time ::= CHOICE {
-    //   utcTime        UTCTime,
-    //   generalTime    GeneralizedTime }
+extension TBSCertificate.SerialNumber {
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.dataValue,
-            let time = Time(validity: bytes) else
+        guard let bytes = asn1.insaneIntegerValue,
+            bytes.count > 0 else
         {
-            throw X509.Error(.invalidTime, asn1)
+            throw X509.Error(.invalidSerialNumber, asn1)
         }
-        switch asn1.tag {
-            case .utcTime: self = .utc(time)
-            case .generalizedTime: self = .generalized(time)
-            default: throw X509.Error(.invalidTime, asn1)
-        }
-    }
-}
-
-// MARK: Utils
-
-extension Time {
-    init?(validity: [UInt8]) {
-        let string = String(decoding: validity, as: UTF8.self)
-        self.init(string, format: "%d%m%y%H%M%S")
+        self.bytes = bytes
     }
 }
