@@ -27,7 +27,7 @@ extension EDIPartyName {
         guard let sequence = asn1.sequenceValue,
             (sequence.count == 1 || sequence.count == 2) else
         {
-            throw X509.Error(.invalidEDIPartyName, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .ediPartyName(.format))
         }
 
         switch sequence.count {
@@ -39,6 +39,16 @@ extension EDIPartyName {
             self.partyName = try .init(from: sequence[1])
         default:
             fatalError("unreachable")
+        }
+    }
+}
+
+// MARK: Error
+
+extension EDIPartyName {
+    public enum Error {
+        public enum Origin {
+            case format
         }
     }
 }
