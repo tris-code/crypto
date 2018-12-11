@@ -123,8 +123,12 @@ extension ASN1 {
 
     public var stringValue: String? {
         switch self.content {
-        case .string(let value): return value
-        default: return nil
+        case .string(let value):
+            return value
+        case .data(let bytes) where tag.isString:
+            return String(decoding: bytes, as: UTF8.self)
+        default:
+            return nil
         }
     }
 
@@ -165,5 +169,15 @@ extension ASN1 {
                 return nil
         }
         return String(decoding: data, as: UTF8.self)
+    }
+}
+
+extension ASN1.Identifier.Tag {
+    var isString: Bool {
+        switch self {
+        // TODO: handle all cases (printableString, etc.)
+        case .ia5String, .visibleString: return true
+        default: return false
+        }
     }
 }
