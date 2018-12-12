@@ -218,7 +218,7 @@ class ExtensionDecodeTests: TestCase {
 
     func testCertificatePoliciesExtension() {
         scope {
-            let asn1 = try ASN1(
+            let asn1 = ASN1(
                 identifier: .init(
                     isConstructed: true,
                     class: .universal,
@@ -281,9 +281,16 @@ class ExtensionDecodeTests: TestCase {
                         ]))
                 ]))
             let certificatePoliciesExtension = try Extension(from: asn1)
+            // fix compile time (16000ms+)
+            let explicitText = "Usage of this certificate is " +
+                               "strictly subjected to the CERTUM " +
+                               "Certification Practice Statement " +
+                               "(CPS) incorporated by reference " +
+                               "herein and in the repository at " +
+                               "https://www.certum.pl/repository."
             assertEqual(
                 certificatePoliciesExtension,
-                Extension(
+                .init(
                     id: .certificateExtension(.certificatePolicies(nil)),
                     isCritical: false,
                     value: .certificatePolicies([
@@ -299,13 +306,7 @@ class ExtensionDecodeTests: TestCase {
                                         organization: .ia5String(
                                             "Unizeto Technologies S.A."),
                                         noticeNumbers: [2]),
-                                    explicitText: .visibleString(
-                                        "Usage of this certificate is " +
-                                        "strictly subjected to the CERTUM " +
-                                        "Certification Practice Statement " +
-                                        "(CPS) incorporated by reference " +
-                                        "herein and in the repository at " +
-                                        "https://www.certum.pl/repository.")))
+                                    explicitText: .visibleString(explicitText)))
                             ])])))
 
         }
