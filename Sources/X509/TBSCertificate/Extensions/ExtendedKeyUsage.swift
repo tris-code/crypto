@@ -13,10 +13,9 @@ import ASN1
 
 extension Extension {
     public struct ExtendedKeyUsage: Equatable {
-        // TODO: use enum
-        public typealias KeyPurposeId = ASN1.ObjectIdentifier
+        public typealias KeyPurpose = ASN1.ObjectIdentifier.Pkix.KeyPurpose
 
-        public let keyPurposeIds: [KeyPurposeId]
+        public let keyPurposes: [KeyPurpose]
     }
 }
 
@@ -32,11 +31,15 @@ extension Extension.ExtendedKeyUsage {
         {
             throw Error.invalidASN1(asn1)
         }
-        self.keyPurposeIds = try sequence.map {
+        self.keyPurposes = try sequence.map {
             guard let id = $0.objectIdentifierValue else {
                 throw Error.invalidASN1(asn1)
             }
-            return id
+            switch id {
+            case .pkix(.some(.keyPurpose(.serverAuth))): return .serverAuth
+            case .pkix(.some(.keyPurpose(.clientAuth))): return .clientAuth
+            default: return .other(id)
+            }
         }
     }
 }
