@@ -9,6 +9,7 @@ extension ASN1DecodeTests {
         ("testContentBoolean", testContentBoolean),
         ("testContentData", testContentData),
         ("testContentEnumerated", testContentEnumerated),
+        ("testContentObjectIdentifier", testContentObjectIdentifier),
         ("testContentPrintableString", testContentPrintableString),
         ("testContentSequence", testContentSequence),
         ("testContentUTF8String", testContentUTF8String),
