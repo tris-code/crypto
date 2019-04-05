@@ -5,7 +5,7 @@ Cryptography in Swift
 ## Package.swift
 
 ```swift
-.package(url: "https://github.com/tris-foundation/crypto.git", from: "master")
+.package(url: "https://github.com/tris-code/crypto.git", from: "master")
 ```
 
 ## SHA1
