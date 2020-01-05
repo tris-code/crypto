@@ -10,18 +10,10 @@ let package = Package(
         .library(name: "Crypto", targets: ["Crypto"])
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/tris-code/stream.git",
-            .branch("master")),
-        .package(
-            url: "https://github.com/tris-code/radix.git",
-            .branch("master")),
-        .package(
-            url: "https://github.com/tris-code/time.git",
-            .branch("master")),
-        .package(
-            url: "https://github.com/tris-code/test.git",
-            .branch("master"))
+        .package(path: "../Stream"),
+        .package(path: "../Radix"),
+        .package(path: "../Time"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(name: "UInt24"),
