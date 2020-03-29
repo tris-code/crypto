@@ -10,10 +10,10 @@ let package = Package(
         .library(name: "Crypto", targets: ["Crypto"])
     ],
     dependencies: [
-        .package(path: "../Stream"),
-        .package(path: "../Radix"),
-        .package(path: "../Time"),
-        .package(path: "../Test")
+        .package(path: "../stream"),
+        .package(path: "../radix"),
+        .package(path: "../time"),
+        .package(path: "../test")
     ],
     targets: [
         .target(name: "UInt24"),
